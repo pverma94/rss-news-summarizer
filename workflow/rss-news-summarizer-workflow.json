@@ -1,0 +1,217 @@
+{
+  "name": "RSS News Summarizer",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour",
+              "minute": 59
+            }
+          ]
+        },
+        "feedUrl": "http://feeds.bbci.co.uk/news/rss.xml"
+      },
+      "type": "n8n-nodes-base.rssFeedReadTrigger",
+      "typeVersion": 1,
+      "position": [
+        -220,
+        0
+      ],
+      "id": "6f7d4c57-e391-4add-97a3-6809dffcbf9b",
+      "name": "RSS Feed Trigger"
+    },
+    {
+      "parameters": {
+        "url": "={{$node[\"RSS Feed Trigger\"].json[\"link\"]}}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "8a491fbe-ed56-4ecd-b68a-97044cdf3c50",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Summarize the following article content in 100 words or less, excluding HTML tags: {{$node[\"HTTP Request\"].json[\"data\"]}}",
+        "options": {
+          "systemMessage": "You are a neutral news summarizer. Provide concise, factual summaries in 100 words or less, excluding HTML tags."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "7dd7f389-b14f-4b0b-a5a7-786d0cf7f565",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        460,
+        220
+      ],
+      "id": "76946245-f789-4d0c-b81d-3c11c6f1c329",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "cboU6Zsmj5iMrfHr",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "{{$node[\"RSS Feed Trigger\"].json[\"link\"]}}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        580,
+        220
+      ],
+      "id": "93e5fac7-bc89-4bee-9faa-337d124a94b7",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"link\": \"{{$node[\\\"RSS Feed Trigger\\\"].json[\\\"link\\\"]}}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "3dddc2de-1f76-4f40-ad8d-c67fcd193ff7",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "sendTo": "prashant.verma1994@gmail.com",
+        "subject": "=Summary: {{$node[\"RSS Feed Trigger\"].json[\"title\"]}}",
+        "message": "={{$node[\"AI Agent\"].json[\"output\"]}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        800,
+        0
+      ],
+      "id": "17d5c93c-4499-4cc0-a72f-b2e400aaee81",
+      "name": "Send a message",
+      "webhookId": "5e244b05-a758-48c6-a9b8-ab263a15881c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Dv3ySoKRcZLH2Cbh",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "RSS Feed Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8f9d14cd-47c8-4534-a81d-8647f697e112",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a458c75dd4af7cc82b85c961c9d3d7c142f793786b34581b0273cf9d52ce5685"
+  },
+  "id": "PbiCa9CzPKEMRIfA",
+  "tags": []
+}
