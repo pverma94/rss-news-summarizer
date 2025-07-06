@@ -21,22 +21,37 @@ This project fetches articles from an RSS feed (e.g., BBC News), summarizes thei
    ```bash
    git clone https://github.com/your-username/rss-news-summarizer.git
    cd rss-news-summarizer
-
+   ```
 2. Import the workflow:
-    - Open n8n, go to Workflow > Import, and select workflow/rss-news-summarizer-workflow.json.
+    - Open n8n, go to Workflow > Import, and select (workflow/rss-news-summarizer-workflow.json)
 
 3. Configure Credentials
     - Add OpenAI API key in n8n Credentials.
     - Set up Gmail OAuth and authorize.
 
 4. Adjust settings:
-    - Update the RSS feed URL in the RSS Feed Trigger node if needed.
-    - Modify the recipient email in the Gmail node.
+    - Update the RSS feed URL in the **RSS Feed Trigger** node if needed.
+    - Modify the recipient email in the **Gmail** node.
 
 5. Activate the workflow.
     - After all configurations are complete, **toggle the workflow to "Active"** in n8n.
 
 Your summarized news emails will now be delivered on schedule!
+
+## Usage
+   - The workflow triggers automatically based on the polling interval (default: every hour at 59 minutes past).
+   - Check your email for summaries.
+
+## File Structure
+```bash
+rss-news-summarizer/
+├── workflow/              # n8n workflow file
+│   └── rss-news-summarizer-workflow.json
+├── docs/                  # Additional documentation
+│   └── configuration-notes.md
+├── README.md              # This file
+└── LICENSE                # License information
+```
 
 ## Tech Stack
     - [n8n](https://n8n.io) – Workflow automation
