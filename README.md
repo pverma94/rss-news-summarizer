@@ -54,9 +54,9 @@ rss-news-summarizer/
 ```
 
 ## Tech Stack
-    - [n8n](https://n8n.io) – Workflow automation
-    - [OpenAI](https://openai.com) – Article summarization
-    - [Gmail](https://gmail.com) – Email delivery
+   - [n8n](https://n8n.io) – Workflow automation
+   - [OpenAI](https://openai.com) – Article summarization
+   - [Gmail](https://gmail.com) – Email delivery
 
 ## License
 This project is licensed under the MIT License.
